@@ -1,5 +1,7 @@
 # 大六壬Web排盤介面 (Da Liu Ren Web Engine)
 
+![image-20260520180136492](README.assets/image-20260520180136492.png)
+
 這是一個將傳統大六壬 Python 引擎現代化、Web 化的開源專案。
 本專案基於 FastAPI 建構後端 API，並搭配高度視覺化的無框架前端介面，專為現代大六壬實戰預測與 AI 輔助分析所設計。
 
@@ -67,5 +69,4 @@ uvicorn app.main:app --reload
 ## 致謝
 
 本專案的大六壬排盤核心演算法基於[daliurenpython-zh-tw](https://github.com/d1210182010/daliurenpython-zh-tw)，修改自開源專案 [daliurenpython](https://github.com/wlhyl/dalurenpython)。特此致謝原作者在底層曆法與九宗法上的基礎貢獻。
-
 
