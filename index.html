@@ -1,92 +1,463 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>大六壬 Web排盤介面 V2.2.1</title>
     <style>
-        :root {
-            --bg-color: #F8F5EE; --text-main: #2C2C2C; --text-muted: #6B6358; 
-            --border-color: #C2B6A3; --accent-red: #8B1D1D; --panel-bg: #FFFFFF;
-            --wx-wood: #2E7D32; --wx-fire: #C62828; --wx-earth: #8D6E63; 
-            --wx-metal: #F9A825; --wx-water: #1565C0;
+         :root {
+            --bg-color: #F8F5EE;
+            --text-main: #2C2C2C;
+            --text-muted: #6B6358;
+            --border-color: #C2B6A3;
+            --accent-red: #8B1D1D;
+            --panel-bg: #FFFFFF;
+            --wx-wood: #2E7D32;
+            --wx-fire: #C62828;
+            --wx-earth: #8D6E63;
+            --wx-metal: #F9A825;
+            --wx-water: #1565C0;
         }
-
-        body { background-color: var(--bg-color); color: var(--text-main); font-family: "Kaiti", "STKaiti", "Microsoft JhengHei", serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        h1 { font-size: 2em; letter-spacing: 4px; border-bottom: 2px solid var(--text-main); padding-bottom: 10px; margin-bottom: 30px; }
-
-        .control-panel { background: var(--panel-bg); border: 1px solid var(--border-color); padding: 15px 25px; border-radius: 4px; box-shadow: 2px 2px 8px rgba(0,0,0,0.05); display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; align-items: center; margin-bottom: 30px; max-width: 900px; }
-        .control-panel label { font-weight: bold; color: var(--text-muted); display: flex; align-items: center; gap: 5px; }
-        .control-panel input, .control-panel select { background: #fff; border: 1px solid #ccc; padding: 6px; text-align: center; font-size: 15px; border-radius: 2px; }
-        .control-panel input { width: 50px; }
-        .control-panel select { width: auto; font-family: inherit; font-weight: bold; cursor: pointer; color: var(--text-main); border: 1px solid var(--text-main); }
         
-        .btn-primary { background: var(--text-main); color: #fff; border: none; padding: 8px 20px; font-size: 16px; cursor: pointer; border-radius: 2px; letter-spacing: 2px; transition: 0.3s; }
-        .btn-primary:hover { background: var(--accent-red); }
-        .btn-toggle-qi { background: #E6E2D8; color: var(--text-main); border: 1px dashed var(--text-main); padding: 8px 20px; font-size: 16px; cursor: pointer; border-radius: 2px; letter-spacing: 1px; transition: 0.3s; display: none; }
-        .btn-toggle-qi:hover { background: var(--border-color); }
-        .btn-toggle-qi.active { background: var(--accent-red); color: white; border-style: solid; box-shadow: 0 0 10px rgba(139,29,29,0.5); }
-        .btn-copy { background: #455A64; display: none; }
-        .btn-copy:hover { background: #263238; }
-
-        #shipan-container { width: 100%; max-width: 900px; background: var(--panel-bg); border: 2px solid var(--text-main); padding: 30px; box-sizing: border-box; display: none; }
-        .info-section { border-bottom: 1px dashed var(--border-color); padding-bottom: 15px; margin-bottom: 20px; text-align: center; line-height: 1.8; font-size: 1.1em; }
-        .info-section .highlight { color: var(--accent-red); font-weight: bold; }
-        .info-section .daynight-badge { background: #E6E2D8; padding: 2px 8px; border-radius: 12px; font-size: 0.85em; color: var(--text-main); border: 1px solid var(--border-color); margin-left: 10px; }
-
-        .progress-container { width: 100%; max-width: 600px; margin: 0 auto 25px auto; padding: 12px; background: #FAF9F6; border: 1px solid var(--border-color); border-radius: 2px; box-sizing: border-box; }
-        .progress-title { font-size: 0.9em; color: var(--text-muted); margin-bottom: 6px; font-weight: bold; text-align: center; }
-        .progress-bar-bg { width: 100%; height: 8px; background-color: #E6E2D8; border-radius: 4px; overflow: hidden; }
-        .progress-bar-fill { height: 100%; background-color: var(--accent-red); width: 0%; transition: width 0.6s ease; }
-        .progress-labels { display: flex; justify-content: space-between; font-size: 0.85em; margin-top: 6px; color: var(--text-muted); }
-
-        .layout-wrapper { display: flex; flex-direction: column; align-items: center; gap: 40px; }
-        .top-row { display: flex; justify-content: space-around; width: 100%; flex-wrap: wrap; gap: 20px; }
-        table { border-collapse: collapse; font-size: 1.2em; }
-        td { padding: 12px 18px; text-align: center; position: relative; border: 1px solid var(--border-color); }
-        td:empty { border: none !important; background: transparent !important; } 
-
-        .sanchuan-box, .sike-box, .tianpan-box { text-align: center; width: 100%; }
-        h3 { margin: 0 0 10px 0; font-size: 1.1em; color: var(--text-muted); font-weight: bold; }
-        .sanchuan-table, .sike-table { border: 2px solid var(--text-main); margin: 0 auto; }
-        .tianpan-table { margin: 0 auto; border: 2px solid var(--text-main); background-color: transparent; }
-        .tianpan-table td { width: 65px; height: 65px; padding: 5px; }
-        .tp-god { background-color: #F8F5EE; color: var(--text-muted); font-size: 0.95em; border: 1px dashed var(--border-color) !important; }
-        .tp-branch { background-color: #FFFFFF; font-weight: bold; font-size: 1.25em; border: 1px solid #A1887F !important; box-shadow: inset 0 0 6px rgba(0,0,0,0.03); }
-        .guati-section { margin-top: 30px; padding: 15px; background: #F1EFEA; border-left: 4px solid var(--text-main); font-size: 1.1em; }
-        .loading { display: none; color: var(--accent-red); font-weight: bold; margin-top: 20px; }
-
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: "Kaiti", "STKaiti", "Microsoft JhengHei", serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        h1 {
+            font-size: 2em;
+            letter-spacing: 4px;
+            border-bottom: 2px solid var(--text-main);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .control-panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            padding: 15px 25px;
+            border-radius: 4px;
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+            max-width: 900px;
+        }
+        
+        .control-panel label {
+            font-weight: bold;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .control-panel input,
+        .control-panel select {
+            background: #fff;
+            border: 1px solid #ccc;
+            padding: 6px;
+            text-align: center;
+            font-size: 15px;
+            border-radius: 2px;
+        }
+        
+        .control-panel input {
+            width: 50px;
+        }
+        
+        .control-panel select {
+            width: auto;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            color: var(--text-main);
+            border: 1px solid var(--text-main);
+        }
+        
+        .btn-primary {
+            background: var(--text-main);
+            color: #fff;
+            border: none;
+            padding: 8px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 2px;
+            letter-spacing: 2px;
+            transition: 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background: var(--accent-red);
+        }
+        
+        .btn-toggle-qi {
+            background: #E6E2D8;
+            color: var(--text-main);
+            border: 1px dashed var(--text-main);
+            padding: 8px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 2px;
+            letter-spacing: 1px;
+            transition: 0.3s;
+            display: none;
+        }
+        
+        .btn-toggle-qi:hover {
+            background: var(--border-color);
+        }
+        
+        .btn-toggle-qi.active {
+            background: var(--accent-red);
+            color: white;
+            border-style: solid;
+            box-shadow: 0 0 10px rgba(139, 29, 29, 0.5);
+        }
+        
+        .btn-copy {
+            background: #455A64;
+            display: none;
+        }
+        
+        .btn-copy:hover {
+            background: #263238;
+        }
+        
+        #shipan-container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--panel-bg);
+            border: 2px solid var(--text-main);
+            padding: 30px;
+            box-sizing: border-box;
+            display: none;
+        }
+        
+        .info-section {
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            line-height: 1.8;
+            font-size: 1.1em;
+        }
+        
+        .info-section .highlight {
+            color: var(--accent-red);
+            font-weight: bold;
+        }
+        
+        .info-section .daynight-badge {
+            background: #E6E2D8;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            margin-left: 10px;
+        }
+        
+        .progress-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto 25px auto;
+            padding: 12px;
+            background: #FAF9F6;
+            border: 1px solid var(--border-color);
+            border-radius: 2px;
+            box-sizing: border-box;
+        }
+        
+        .progress-title {
+            font-size: 0.9em;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .progress-bar-bg {
+            width: 100%;
+            height: 8px;
+            background-color: #E6E2D8;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            background-color: var(--accent-red);
+            width: 0%;
+            transition: width 0.6s ease;
+        }
+        
+        .progress-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85em;
+            margin-top: 6px;
+            color: var(--text-muted);
+        }
+        
+        .layout-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+        }
+        
+        .top-row {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        table {
+            border-collapse: collapse;
+            font-size: 1.2em;
+        }
+        
+        td {
+            padding: 12px 18px;
+            text-align: center;
+            position: relative;
+            border: 1px solid var(--border-color);
+        }
+        
+        td:empty {
+            border: none !important;
+            background: transparent !important;
+        }
+        
+        .sanchuan-box,
+        .sike-box,
+        .tianpan-box {
+            text-align: center;
+            width: 100%;
+        }
+        
+        h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.1em;
+            color: var(--text-muted);
+            font-weight: bold;
+        }
+        
+        .sanchuan-table,
+        .sike-table {
+            border: 2px solid var(--text-main);
+            margin: 0 auto;
+        }
+        
+        .tianpan-table {
+            margin: 0 auto;
+            border: 2px solid var(--text-main);
+            background-color: transparent;
+        }
+        
+        .tianpan-table td {
+            width: 65px;
+            height: 65px;
+            padding: 5px;
+        }
+        
+        .tp-god {
+            background-color: #F8F5EE;
+            color: var(--text-muted);
+            font-size: 0.95em;
+            border: 1px dashed var(--border-color) !important;
+        }
+        
+        .tp-branch {
+            background-color: #FFFFFF;
+            font-weight: bold;
+            font-size: 1.25em;
+            border: 1px solid #A1887F !important;
+            box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.03);
+        }
+        
+        .guati-section {
+            margin-top: 30px;
+            padding: 15px;
+            background: #F1EFEA;
+            border-left: 4px solid var(--text-main);
+            font-size: 1.1em;
+        }
+        
+        .loading {
+            display: none;
+            color: var(--accent-red);
+            font-weight: bold;
+            margin-top: 20px;
+        }
         /* ================= 魔法核心 ================= */
-        .wx-tag { position: absolute; top: 2px; right: 2px; font-size: 0.55em; font-weight: bold; padding: 1px 3px; border-radius: 2px; opacity: 0; transform: scale(0); transition: all 0.3s ease; }
-        body.qi-mode .wx-tag { opacity: 1; transform: scale(1); }
-        .wx-木 { color: var(--wx-wood); background: rgba(46,125,50,0.1); }
-        .wx-火 { color: var(--wx-fire); background: rgba(198,40,40,0.1); }
-        .wx-土 { color: var(--wx-earth); background: rgba(141,110,99,0.1); }
-        .wx-金 { color: var(--wx-metal); background: rgba(249,168,37,0.1); }
-        .wx-水 { color: var(--wx-water); background: rgba(21,101,192,0.1); }
-        .sk-arrow { display: none; font-size: 0.7em; font-weight: bold; margin: 6px auto 0; padding: 2px 8px; border-radius: 6px; width: max-content; background: #FFF; box-shadow: 0 1px 3px rgba(0,0,0,0.1); color: var(--accent-red); border: 1px solid rgba(139,29,29,0.3); }
-        body.qi-mode .sk-arrow { display: block; animation: slide-down 0.3s ease forwards; }
-        @keyframes slide-down { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-        body.qi-mode .kw-hollow { opacity: 0.5; background: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.06) 5px, rgba(0,0,0,0.06) 10px) !important; box-shadow: inset 0 0 10px rgba(0,0,0,0.1) !important; }
-        body.qi-mode .kw-hollow::after { content: '空'; position: absolute; bottom: 2px; right: 2px; font-size: 0.6em; color: #888; font-weight: bold; padding: 1px 3px; background: rgba(255,255,255,0.7); border-radius: 2px; }
-        body.qi-mode .ju-highlight { background-color: #FFF0F0 !important; border: 2px solid var(--accent-red) !important; box-shadow: inset 0 0 15px rgba(139, 29, 29, 0.15); animation: ju-pulse 1.5s infinite alternate; }
-        @keyframes ju-pulse { from { background-color: #FFF0F0; } to { background-color: #FDE8E8; } }
-        .ju-name-badge { display: none; text-align: center; font-size: 0.95em; font-weight: bold; color: #8B1D1D; background: #FDE8E8; border: 1px solid #8B1D1D; padding: 6px 15px; border-radius: 20px; margin: 15px auto 0; width: fit-content; letter-spacing: 2px; box-shadow: 0 4px 8px rgba(139,29,29,0.15); }
-        body.qi-mode .ju-name-badge { display: block; animation: pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        @keyframes pop-in { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+        
+        .wx-tag {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            font-size: 0.55em;
+            font-weight: bold;
+            padding: 1px 3px;
+            border-radius: 2px;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.3s ease;
+        }
+        
+        body.qi-mode .wx-tag {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .wx-木 {
+            color: var(--wx-wood);
+            background: rgba(46, 125, 50, 0.1);
+        }
+        
+        .wx-火 {
+            color: var(--wx-fire);
+            background: rgba(198, 40, 40, 0.1);
+        }
+        
+        .wx-土 {
+            color: var(--wx-earth);
+            background: rgba(141, 110, 99, 0.1);
+        }
+        
+        .wx-金 {
+            color: var(--wx-metal);
+            background: rgba(249, 168, 37, 0.1);
+        }
+        
+        .wx-水 {
+            color: var(--wx-water);
+            background: rgba(21, 101, 192, 0.1);
+        }
+        
+        .sk-arrow {
+            display: none;
+            font-size: 0.7em;
+            font-weight: bold;
+            margin: 6px auto 0;
+            padding: 2px 8px;
+            border-radius: 6px;
+            width: max-content;
+            background: #FFF;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            color: var(--accent-red);
+            border: 1px solid rgba(139, 29, 29, 0.3);
+        }
+        
+        body.qi-mode .sk-arrow {
+            display: block;
+            animation: slide-down 0.3s ease forwards;
+        }
+        
+        @keyframes slide-down {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        body.qi-mode .kw-hollow {
+            opacity: 0.5;
+            background: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0, 0, 0, 0.06) 5px, rgba(0, 0, 0, 0.06) 10px) !important;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        body.qi-mode .kw-hollow::after {
+            content: '空';
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            font-size: 0.6em;
+            color: #888;
+            font-weight: bold;
+            padding: 1px 3px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 2px;
+        }
+        
+        body.qi-mode .ju-highlight {
+            background-color: #FFF0F0 !important;
+            border: 2px solid var(--accent-red) !important;
+            box-shadow: inset 0 0 15px rgba(139, 29, 29, 0.15);
+            animation: ju-pulse 1.5s infinite alternate;
+        }
+        
+        @keyframes ju-pulse {
+            from {
+                background-color: #FFF0F0;
+            }
+            to {
+                background-color: #FDE8E8;
+            }
+        }
+        
+        .ju-name-badge {
+            display: none;
+            text-align: center;
+            font-size: 0.95em;
+            font-weight: bold;
+            color: #8B1D1D;
+            background: #FDE8E8;
+            border: 1px solid #8B1D1D;
+            padding: 6px 15px;
+            border-radius: 20px;
+            margin: 15px auto 0;
+            width: fit-content;
+            letter-spacing: 2px;
+            box-shadow: 0 4px 8px rgba(139, 29, 29, 0.15);
+        }
+        
+        body.qi-mode .ju-name-badge {
+            display: block;
+            animation: pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        
+        @keyframes pop-in {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
     </style>
 </head>
+
 <body>
 
     <h1>大六壬 Web排盤介面 V2.2.1</h1>
-    
+
     <div class="control-panel">
         <label>年 <input type="number" id="year"></label>
         <label>月 <input type="number" id="month"></label>
         <label>日 <input type="number" id="day"></label>
         <label>時 <input type="number" id="hour"></label>
         <label>分 <input type="number" id="minute"></label>
-        
+
         <label style="margin-left:10px;">法則: 
             <select id="daynight-rule">
                 <option value="traditional">卯酉分界 (傳統)</option>
@@ -103,19 +474,82 @@
     <div id="shipan-container"></div>
 
     <script>
-        const wxMap = { '甲':'木', '乙':'木', '寅':'木', '卯':'木', '丙':'火', '丁':'火', '巳':'火', '午':'火', '戊':'土', '己':'土', '辰':'土', '戌':'土', '丑':'土', '未':'土', '庚':'金', '辛':'金', '申':'金', '酉':'金', '壬':'水', '癸':'水', '亥':'水', '子':'水' };
-        const shengKeRules = { '木':{剋:'土'}, '火':{剋:'金'}, '土':{剋:'水'}, '金':{剋:'木'}, '水':{剋:'火'} };
-        const sanHeJu = [ { branches: ['申','子','辰'], name: '申子辰 水局' }, { branches: ['亥','卯','未'], name: '亥卯未 木局' }, { branches: ['寅','午','戌'], name: '寅午戌 火局' }, { branches: ['巳','酉','丑'], name: '巳酉丑 金局' } ];
+        const wxMap = {
+            '甲': '木',
+            '乙': '木',
+            '寅': '木',
+            '卯': '木',
+            '丙': '火',
+            '丁': '火',
+            '巳': '火',
+            '午': '火',
+            '戊': '土',
+            '己': '土',
+            '辰': '土',
+            '戌': '土',
+            '丑': '土',
+            '未': '土',
+            '庚': '金',
+            '辛': '金',
+            '申': '金',
+            '酉': '金',
+            '壬': '水',
+            '癸': '水',
+            '亥': '水',
+            '子': '水'
+        };
+        const shengKeRules = {
+            '木': {
+                剋: '土'
+            },
+            '火': {
+                剋: '金'
+            },
+            '土': {
+                剋: '水'
+            },
+            '金': {
+                剋: '木'
+            },
+            '水': {
+                剋: '火'
+            }
+        };
+        const sanHeJu = [{
+            branches: ['申', '子', '辰'],
+            name: '申子辰 水局'
+        }, {
+            branches: ['亥', '卯', '未'],
+            name: '亥卯未 木局'
+        }, {
+            branches: ['寅', '午', '戌'],
+            name: '寅午戌 火局'
+        }, {
+            branches: ['巳', '酉', '丑'],
+            name: '巳酉丑 金局'
+        }];
 
         window.addEventListener('DOMContentLoaded', () => {
             const now = new Date();
-            document.getElementById('year').value = now.getFullYear(); document.getElementById('month').value = now.getMonth() + 1; document.getElementById('day').value = now.getDate(); document.getElementById('hour').value = now.getHours(); document.getElementById('minute').value = now.getMinutes();
+            document.getElementById('year').value = now.getFullYear();
+            document.getElementById('month').value = now.getMonth() + 1;
+            document.getElementById('day').value = now.getDate();
+            document.getElementById('hour').value = now.getHours();
+            document.getElementById('minute').value = now.getMinutes();
         });
 
         function toggleQiMode() {
-            const body = document.body; const btn = document.getElementById('btn-qi');
-            if(body.classList.contains('qi-mode')) { body.classList.remove('qi-mode'); btn.classList.remove('active'); btn.innerHTML = '👁️ 開啟氣數透視'; } 
-            else { body.classList.add('qi-mode'); btn.classList.add('active'); btn.innerHTML = '✖ 關閉透視'; }
+            const body = document.body;
+            const btn = document.getElementById('btn-qi');
+            if (body.classList.contains('qi-mode')) {
+                body.classList.remove('qi-mode');
+                btn.classList.remove('active');
+                btn.innerHTML = '👁️ 開啟氣數透視';
+            } else {
+                body.classList.add('qi-mode');
+                btn.classList.add('active');
+                btn.innerHTML = '✖ 關閉透視';
+            }
         }
 
         // ==========================================
@@ -123,7 +557,7 @@
         // ==========================================
         function determineDaytime(year, month, day, hour, minute, rule) {
             const timeDecimal = hour + minute / 60;
-            
+
             if (rule === 'traditional') {
                 // 傳統法則：卯(5:00) 到 酉(17:00前) 為晝。即 05:00 ~ 16:59
                 return (timeDecimal >= 5.0 && timeDecimal < 17.0);
@@ -144,8 +578,16 @@
         }
 
         async function triggerEngine() {
-            const container = document.getElementById('shipan-container'); const btnQi = document.getElementById('btn-qi'); const btnCopy = document.getElementById('btn-copy'); const loading = document.getElementById('loading');
-            container.style.display = "none"; btnQi.style.display = "none"; btnCopy.style.display = "none"; container.innerHTML = ""; loading.style.display = "block"; document.body.classList.remove('qi-mode'); 
+            const container = document.getElementById('shipan-container');
+            const btnQi = document.getElementById('btn-qi');
+            const btnCopy = document.getElementById('btn-copy');
+            const loading = document.getElementById('loading');
+            container.style.display = "none";
+            btnQi.style.display = "none";
+            btnCopy.style.display = "none";
+            container.innerHTML = "";
+            loading.style.display = "block";
+            document.body.classList.remove('qi-mode');
 
             // 讀取 UI 參數
             const y = parseInt(document.getElementById('year').value);
@@ -159,100 +601,191 @@
             const isDay = determineDaytime(y, m, d, h, min, rule);
             const ruleLabel = rule === 'traditional' ? "傳統卯酉" : "真實地平線";
 
-            const payload = { year: y, month: m, day: d, hour: h, minute: min, second: 0, gender: 0, birth_year: 1994, is_daytime: isDay, is_mingpan: false, query_matter: "" };
+            const payload = {
+                year: y,
+                month: m,
+                day: d,
+                hour: h,
+                minute: min,
+                second: 0,
+                gender: 0,
+                birth_year: 1994,
+                is_daytime: isDay,
+                is_mingpan: false,
+                query_matter: ""
+            };
 
             try {
-                const response = await fetch('http://127.0.0.1:8000/api/v1/shipan/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                if(!response.ok) throw new Error("伺服器回傳錯誤");
+                const response = await fetch('http://127.0.0.1:8000/api/v1/shipan/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) throw new Error("伺服器回傳錯誤");
                 const data = await response.json();
-                
-                const tempDiv = document.createElement('div'); tempDiv.innerHTML = data.html_content;
+
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = data.html_content;
                 const allDivs = Array.from(tempDiv.querySelectorAll(':scope > div'));
                 const tableContainer = tempDiv.querySelector('div[style*="width"]');
                 const indexOfTable = allDivs.indexOf(tableContainer);
-                const infoDivs = allDivs.slice(0, indexOfTable); const guatiDivs = allDivs.slice(indexOfTable + 1);
+                const infoDivs = allDivs.slice(0, indexOfTable);
+                const guatiDivs = allDivs.slice(indexOfTable + 1);
                 const tables = tableContainer.querySelectorAll('table');
 
-                const infoSection = document.createElement('div'); infoSection.className = 'info-section';
+                const infoSection = document.createElement('div');
+                infoSection.className = 'info-section';
                 let kwBranches = [];
                 infoDivs.forEach(div => {
                     div.innerHTML = div.innerHTML.replace(/(空亡[:：].+?\))/, '<span class="highlight">$1</span>');
-                    
+
                     // 在有「晝占」或「夜占」的那一行，補上我們使用的法則標籤，讓使用者知道依據
                     if (div.innerText.includes('晝占') || div.innerText.includes('夜占')) {
                         div.innerHTML += `<span class="daynight-badge">採用: ${ruleLabel}</span>`;
                     }
-                    
+
                     infoSection.appendChild(div);
                     const kwMatch = div.innerText.match(/空亡[:：]\s*([子丑寅卯辰巳午未申酉戌亥])\s*([子丑寅卯辰巳午未申酉戌亥])/);
-                    if(kwMatch) kwBranches = [kwMatch[1], kwMatch[2]];
+                    if (kwMatch) kwBranches = [kwMatch[1], kwMatch[2]];
                 });
 
                 // 動態進度條
-                const progressContainer = document.createElement('div'); progressContainer.className = 'progress-container'; progressContainer.style.display = 'none';
+                const progressContainer = document.createElement('div');
+                progressContainer.className = 'progress-container';
+                progressContainer.style.display = 'none';
                 let solarTerms = [];
-                infoDivs.forEach(div => { const match = div.innerText.match(/([^\s]+)\s+(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2})/); if (match) solarTerms.push({ name: match[1], timeStr: match[2], time: new Date(match[2].replace(/-/g, '/')) }); });
+                infoDivs.forEach(div => {
+                    const match = div.innerText.match(/([^\s]+)\s+(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2})/);
+                    if (match) solarTerms.push({
+                        name: match[1],
+                        timeStr: match[2],
+                        time: new Date(match[2].replace(/-/g, '/'))
+                    });
+                });
                 if (solarTerms.length >= 2) {
-                    const jieTime = solarTerms[0].time.getTime(); const qiTime = solarTerms[1].time.getTime();
+                    const jieTime = solarTerms[0].time.getTime();
+                    const qiTime = solarTerms[1].time.getTime();
                     const inputTime = new Date(`${payload.year}/${payload.month}/${payload.day} ${payload.hour}:${payload.minute}:00`).getTime();
-                    const nextJieTime = qiTime + (qiTime - jieTime); 
-                    if (inputTime >= jieTime && inputTime <= nextJieTime + 86400000) { 
+                    const nextJieTime = qiTime + (qiTime - jieTime);
+                    if (inputTime >= jieTime && inputTime <= nextJieTime + 86400000) {
                         progressContainer.style.display = 'block';
-                        let currentStage = "", labelStart = "", labelEnd = "", percent = 0;
-                        if (inputTime <= qiTime) { currentStage = `目前位於【${solarTerms[0].name}】至【${solarTerms[1].name}】之上半月氣數`; labelStart = solarTerms[0].name; labelEnd = solarTerms[1].name; percent = ((inputTime - jieTime) / (qiTime - jieTime) * 100); } 
-                        else { currentStage = `已過【${solarTerms[1].name}】中氣，月將準備交接`; labelStart = solarTerms[1].name; labelEnd = "交下個節令"; percent = ((inputTime - qiTime) / (nextJieTime - qiTime) * 100); }
+                        let currentStage = "",
+                            labelStart = "",
+                            labelEnd = "",
+                            percent = 0;
+                        if (inputTime <= qiTime) {
+                            currentStage = `目前位於【${solarTerms[0].name}】至【${solarTerms[1].name}】之上半月氣數`;
+                            labelStart = solarTerms[0].name;
+                            labelEnd = solarTerms[1].name;
+                            percent = ((inputTime - jieTime) / (qiTime - jieTime) * 100);
+                        } else {
+                            currentStage = `已過【${solarTerms[1].name}】中氣，月將準備交接`;
+                            labelStart = solarTerms[1].name;
+                            labelEnd = "交下個節令";
+                            percent = ((inputTime - qiTime) / (nextJieTime - qiTime) * 100);
+                        }
                         percent = percent > 100 ? 100 : percent.toFixed(1);
                         progressContainer.innerHTML = `<div class="progress-title">${currentStage}</div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width: ${percent}%;"></div></div><div class="progress-labels"><span>${labelStart}</span><span class="progress-percent">本區間已過 ${percent}%</span><span>${labelEnd}</span></div>`;
                     }
                 }
 
-                const layoutWrapper = document.createElement('div'); layoutWrapper.className = 'layout-wrapper';
-                const topRow = document.createElement('div'); topRow.className = 'top-row';
+                const layoutWrapper = document.createElement('div');
+                layoutWrapper.className = 'layout-wrapper';
+                const topRow = document.createElement('div');
+                topRow.className = 'top-row';
 
-                if(tables.length >= 2) {
-                    const sanchuanBox = document.createElement('div'); sanchuanBox.className = 'sanchuan-box'; sanchuanBox.innerHTML = '<h3>【三傳】 (事態軌跡)</h3>'; tables[0].className = 'sanchuan-table'; sanchuanBox.appendChild(tables[0]);
-                    const sikeBox = document.createElement('div'); sikeBox.className = 'sike-box'; sikeBox.innerHTML = '<h3>【四課】 (主客現狀)</h3>'; tables[1].className = 'sike-table'; sikeBox.appendChild(tables[1]);
-                    topRow.appendChild(sanchuanBox); topRow.appendChild(sikeBox);
+                if (tables.length >= 2) {
+                    const sanchuanBox = document.createElement('div');
+                    sanchuanBox.className = 'sanchuan-box';
+                    sanchuanBox.innerHTML = '<h3>【三傳】 (事態軌跡)</h3>';
+                    tables[0].className = 'sanchuan-table';
+                    sanchuanBox.appendChild(tables[0]);
+                    const sikeBox = document.createElement('div');
+                    sikeBox.className = 'sike-box';
+                    sikeBox.innerHTML = '<h3>【四課】 (主客現狀)</h3>';
+                    tables[1].className = 'sike-table';
+                    sikeBox.appendChild(tables[1]);
+                    topRow.appendChild(sanchuanBox);
+                    topRow.appendChild(sikeBox);
                 }
 
-                const tianpanBox = document.createElement('div'); tianpanBox.className = 'tianpan-box';
-                if(tables.length >= 3) { tianpanBox.innerHTML = '<h3>【天地盤】 (12宮氣數)</h3>'; tables[2].className = 'tianpan-table'; tianpanBox.appendChild(tables[2]); }
+                const tianpanBox = document.createElement('div');
+                tianpanBox.className = 'tianpan-box';
+                if (tables.length >= 3) {
+                    tianpanBox.innerHTML = '<h3>【天地盤】 (12宮氣數)</h3>';
+                    tables[2].className = 'tianpan-table';
+                    tianpanBox.appendChild(tables[2]);
+                }
 
-                layoutWrapper.appendChild(topRow); layoutWrapper.appendChild(tianpanBox);
-                const guatiSection = document.createElement('div'); guatiSection.className = 'guati-section'; guatiDivs.forEach(d => guatiSection.appendChild(d));
+                layoutWrapper.appendChild(topRow);
+                layoutWrapper.appendChild(tianpanBox);
+                const guatiSection = document.createElement('div');
+                guatiSection.className = 'guati-section';
+                guatiDivs.forEach(d => guatiSection.appendChild(d));
 
-                container.appendChild(infoSection); container.appendChild(progressContainer); container.appendChild(layoutWrapper); container.appendChild(guatiSection);
-                
+                container.appendChild(infoSection);
+                container.appendChild(progressContainer);
+                container.appendChild(layoutWrapper);
+                container.appendChild(guatiSection);
+
                 injectQiSight(container, tables, kwBranches);
 
-                container.style.display = "block"; 
-                btnQi.style.display = "block"; btnQi.classList.remove('active'); btnQi.innerHTML = '👁️ 開啟氣數透視';
+                container.style.display = "block";
+                btnQi.style.display = "block";
+                btnQi.classList.remove('active');
+                btnQi.innerHTML = '👁️ 開啟氣數透視';
                 btnCopy.style.display = "block";
 
-            } catch (error) { container.innerHTML = `<p style="color: red; text-align: center;">起課失敗！</p>`; container.style.display = "block"; } finally { loading.style.display = "none"; }
+            } catch (error) {
+                container.innerHTML = `<p style="color: red; text-align: center;">起課失敗！</p>`;
+                container.style.display = "block";
+            } finally {
+                loading.style.display = "none";
+            }
         }
 
         function injectQiSight(container, tables, kwBranches) {
+            // 徹底消除三傳與四課左側的「終端機排版幽靈欄位」
+            [tables[0], tables[1]].forEach(table => {
+                if (!table) return;
+                table.querySelectorAll('tr').forEach(row => {
+                    // 只要該列最左邊的格子(Index 0)是全空的，就將其切除
+                    while (row.cells.length > 0 && row.cells[0].innerText.trim() === '') {
+                        row.cells[0].remove();
+                    }
+                });
+            });
             const allTds = container.querySelectorAll('td');
             allTds.forEach(td => {
-                if (td.closest('.sanchuan-table') && td.cellIndex <= 2) return; 
-                const text = td.innerText.trim(); const char = text.charAt(0); 
-                if (text.length === 1 && wxMap[text]) { td.innerHTML = `${text}<span class="wx-tag wx-${wxMap[text]}">${wxMap[text]}</span>`; }
-                if (kwBranches.includes(char) && (td.classList.contains('tp-branch') || td.closest('.sanchuan-table'))) { td.classList.add('kw-hollow'); }
+                if (td.closest('.sanchuan-table') && td.cellIndex <= 2) return;
+                const text = td.innerText.trim();
+                const char = text.charAt(0);
+                if (text.length === 1 && wxMap[text]) {
+                    td.innerHTML = `${text}<span class="wx-tag wx-${wxMap[text]}">${wxMap[text]}</span>`;
+                }
+                if (kwBranches.includes(char) && (td.classList.contains('tp-branch') || td.closest('.sanchuan-table'))) {
+                    td.classList.add('kw-hollow');
+                }
             });
 
             if (tables.length >= 2) {
                 const rows = tables[1].querySelectorAll('tr');
                 if (rows.length >= 3) {
-                    const tianPanCells = rows[1].querySelectorAll('td'); const diPanCells = rows[2].querySelectorAll('td');
+                    const tianPanCells = rows[1].querySelectorAll('td');
+                    const diPanCells = rows[2].querySelectorAll('td');
                     tianPanCells.forEach((tCell, index) => {
                         const dCell = diPanCells[index];
                         if (tCell.innerText && dCell.innerText) {
-                            const tChar = tCell.childNodes[0].nodeValue.trim(); const dChar = dCell.childNodes[0].nodeValue.trim();
+                            const tChar = tCell.childNodes[0].nodeValue.trim();
+                            const dChar = dCell.childNodes[0].nodeValue.trim();
                             if (wxMap[tChar] && wxMap[dChar]) {
-                                const tWx = wxMap[tChar]; const dWx = wxMap[dChar]; let arrowHTML = '';
-                                if (shengKeRules[tWx].剋 === dWx) arrowHTML = `<div class="sk-arrow">↓剋</div>`; 
-                                else if (shengKeRules[dWx].剋 === tWx) arrowHTML = `<div class="sk-arrow">↑賊</div>`; 
+                                const tWx = wxMap[tChar];
+                                const dWx = wxMap[dChar];
+                                let arrowHTML = '';
+                                if (shengKeRules[tWx].剋 === dWx) arrowHTML = `<div class="sk-arrow">↓剋</div>`;
+                                else if (shengKeRules[dWx].剋 === tWx) arrowHTML = `<div class="sk-arrow">↑賊</div>`;
                                 tCell.innerHTML += arrowHTML;
                             }
                         }
@@ -262,31 +795,41 @@
 
             if (tables.length >= 3) {
                 const tpCells = tables[2].querySelectorAll('td');
-                const gods = ['貴','蛇','雀','合','勾','龍','空','虎','常','玄','陰','后']; const branches = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+                const gods = ['貴', '蛇', '雀', '合', '勾', '龍', '空', '虎', '常', '玄', '陰', '后'];
+                const branches = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
                 tpCells.forEach(td => {
-                    if(!td.innerText.trim()) return;
-                    const char = td.innerText.trim().charAt(0); 
+                    if (!td.innerText.trim()) return;
+                    const char = td.innerText.trim().charAt(0);
                     if (gods.includes(char)) td.classList.add('tp-god');
                     else if (branches.includes(char)) td.classList.add('tp-branch');
                 });
             }
 
             if (tables.length >= 1) {
-                const scTable = tables[0]; const rows = scTable.querySelectorAll('tr'); let scBranches = []; let scBranchCells = []; 
+                const scTable = tables[0];
+                const rows = scTable.querySelectorAll('tr');
+                let scBranches = [];
+                let scBranchCells = [];
                 rows.forEach(row => {
                     const cells = row.querySelectorAll('td');
                     cells.forEach(cell => {
-                        if(cell.querySelector('.wx-tag')) {
+                        if (cell.querySelector('.wx-tag')) {
                             const char = cell.innerText.trim().charAt(0);
-                            if (['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'].includes(char)) { scBranches.push(char); scBranchCells.push(cell); }
+                            if (['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'].includes(char)) {
+                                scBranches.push(char);
+                                scBranchCells.push(cell);
+                            }
                         }
                     });
                 });
-                if(scBranches.length >= 3) {
-                    const top3 = scBranches.slice(0,3); const matchedJu = sanHeJu.find(ju => top3.includes(ju.branches[0]) && top3.includes(ju.branches[1]) && top3.includes(ju.branches[2]) );
+                if (scBranches.length >= 3) {
+                    const top3 = scBranches.slice(0, 3);
+                    const matchedJu = sanHeJu.find(ju => top3.includes(ju.branches[0]) && top3.includes(ju.branches[1]) && top3.includes(ju.branches[2]));
                     if (matchedJu) {
-                        scBranchCells.slice(0,3).forEach(cell => cell.classList.add('ju-highlight'));
-                        const badge = document.createElement('div'); badge.className = 'ju-name-badge'; badge.innerText = `✨ 【成局】 ${matchedJu.name}`;
+                        scBranchCells.slice(0, 3).forEach(cell => cell.classList.add('ju-highlight'));
+                        const badge = document.createElement('div');
+                        badge.className = 'ju-name-badge';
+                        badge.innerText = `✨ 【成局】 ${matchedJu.name}`;
                         scTable.parentNode.appendChild(badge);
                     }
                 }
@@ -304,23 +847,29 @@
                 text += "[三傳]\n";
                 scTable.querySelectorAll('tr').forEach((row, i) => {
                     const cells = Array.from(row.querySelectorAll('td')).map(td => {
-                        let clone = td.cloneNode(true); clone.querySelectorAll('.wx-tag').forEach(e => e.remove());
+                        let clone = td.cloneNode(true);
+                        clone.querySelectorAll('.wx-tag').forEach(e => e.remove());
                         let val = clone.innerText.replace(/\s+/g, '').trim();
-                        if (td.classList.contains('kw-hollow')) val += '(空)'; return val;
+                        if (td.classList.contains('kw-hollow')) val += '(空)';
+                        return val;
                     }).filter(t => t !== '');
                     const label = i === 0 ? '初傳' : i === 1 ? '中傳' : '末傳';
-                    if(cells.length > 0) text += `${label}：${cells.join('\t')}\n`;
+                    if (cells.length > 0) text += `${label}：${cells.join('\t')}\n`;
                 });
                 text += "\n";
             }
-            const badge = document.querySelector('.ju-name-badge'); if (badge) text += badge.innerText + "\n\n";
+            const badge = document.querySelector('.ju-name-badge');
+            if (badge) text += badge.innerText + "\n\n";
             const skTable = document.querySelector('.sike-table');
             if (skTable) {
                 text += "[四課] (由右至左：第四課 至 第一課)\n";
                 skTable.querySelectorAll('tr').forEach((row) => {
                     const cells = Array.from(row.querySelectorAll('td')).map(td => {
-                        let clone = td.cloneNode(true); clone.querySelectorAll('.wx-tag').forEach(e => e.remove());
-                        clone.querySelectorAll('.sk-arrow').forEach(e => { e.innerText = `(${e.innerText})`; });
+                        let clone = td.cloneNode(true);
+                        clone.querySelectorAll('.wx-tag').forEach(e => e.remove());
+                        clone.querySelectorAll('.sk-arrow').forEach(e => {
+                            e.innerText = `(${e.innerText})`;
+                        });
                         return clone.innerText.replace(/\s+/g, '').trim();
                     });
                     text += cells.join('\t') + "\n";
@@ -333,9 +882,11 @@
                 tpTable.querySelectorAll('tr').forEach(row => {
                     const cells = Array.from(row.querySelectorAll('td')).map(td => {
                         if (td.childNodes.length === 0) return '　';
-                        let clone = td.cloneNode(true); clone.querySelectorAll('.wx-tag, .sk-arrow').forEach(e => e.remove());
+                        let clone = td.cloneNode(true);
+                        clone.querySelectorAll('.wx-tag, .sk-arrow').forEach(e => e.remove());
                         let val = clone.innerText.replace(/\s+/g, '').trim();
-                        if (td.classList.contains('kw-hollow')) val += '(空)'; return val === '' ? '　' : val;
+                        if (td.classList.contains('kw-hollow')) val += '(空)';
+                        return val === '' ? '　' : val;
                     });
                     text += cells.join('\t') + "\n";
                 });
@@ -345,11 +896,17 @@
             if (guati) text += "[卦體]\n" + guati.innerText.trim() + "\n";
 
             navigator.clipboard.writeText(text).then(() => {
-                const btn = document.getElementById('btn-copy'); const orig = btn.innerHTML;
-                btn.innerHTML = '✅ 複製成功'; btn.style.background = '#2E7D32';
-                setTimeout(() => { btn.innerHTML = orig; btn.style.background = '#455A64'; }, 2000);
+                const btn = document.getElementById('btn-copy');
+                const orig = btn.innerHTML;
+                btn.innerHTML = '✅ 複製成功';
+                btn.style.background = '#2E7D32';
+                setTimeout(() => {
+                    btn.innerHTML = orig;
+                    btn.style.background = '#455A64';
+                }, 2000);
             }).catch(err => alert('瀏覽器阻擋剪貼簿存取，請手動圈選文字複製。'));
         }
     </script>
 </body>
+
 </html>
