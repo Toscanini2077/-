@@ -757,9 +757,12 @@
                     }
                 });
             });
+
             const allTds = container.querySelectorAll('td');
             allTds.forEach(td => {
-                if (td.closest('.sanchuan-table') && td.cellIndex <= 2) return;
+                // 🔴 關鍵修正：因為左邊兩個空格被刪除了，這裡改為 === 0，只跳過第 0 欄的「六親」
+                if (td.closest('.sanchuan-table') && td.cellIndex === 0) return;
+
                 const text = td.innerText.trim();
                 const char = text.charAt(0);
                 if (text.length === 1 && wxMap[text]) {
