@@ -1,0 +1,15 @@
+# Render Blueprint —— 大六壬排盘后端(FastAPI)
+# 用法:把此文件放到你 fork 的仓库根目录,然后在 Render 用 "Blueprint" 部署。
+services:
+  - type: web
+    name: daliuren-web-engine
+    runtime: python
+    plan: free                 # 免费实例(闲置会休眠,冷启动约 30–60s)
+    region: singapore          # 离东亚最近;也可改 oregon / frankfurt
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    autoDeploy: true           # push 到主分支即自动重新部署
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.7"        # 锁定 3.12,确保 astropy/numpy 用预编译轮子(免编译、构建快)
+ 
