@@ -1,4 +1,4 @@
-from ganzhiwuxin import 干, 支
+from app.repo_core.ganzhiwuxin.ganzhiwuxin import 干, 支
 
 
 def do_驿马(sp, shenShaJson):
