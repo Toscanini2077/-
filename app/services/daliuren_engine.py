@@ -57,7 +57,7 @@ def generate_shipan_json(req_data) -> dict:
     # 動態萃取完整天地盤與十二神佈局
     tian_di_pan_data = {}
     for dz in ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"]:
-        from ganzhiwuxin.ganzhiwuxin import 支
+        from app.repo_core.ganzhiwuxin.ganzhiwuxin import 支
         dz_obj = 支(dz)
         tp_branch = sp.tp[dz_obj]
         tian_di_pan_data[dz] = {
